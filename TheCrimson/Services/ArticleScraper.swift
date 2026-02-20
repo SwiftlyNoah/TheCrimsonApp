@@ -64,11 +64,10 @@ nonisolated struct ArticleScraper {
     // MARK: - Article Parsing
 
     private static func parseArticle(from apolloJSON: [String: Any], url: URL) -> CrimsonArticle? {
-        // Find the article content key (starts with "$ROOT_QUERY.content(")
+        // Find the main article content key: "$ROOT_QUERY.content({...})"
+        // It ends with ")" — sub-keys like ".prevArticle", ".issue" have a "." after the ")"
         guard let (_, articleData) = apolloJSON.first(where: { key, _ in
-            key.hasPrefix("$ROOT_QUERY.content(") && !key.contains(".contributors.") &&
-            !key.contains(".shortcodes.") && !key.contains(".tags.") &&
-            !key.contains(".section") && !key.contains(".mainContent")
+            key.hasPrefix("$ROOT_QUERY.content(") && key.hasSuffix(")")
         }),
         let articleDict = articleData as? [String: Any] else {
             return nil

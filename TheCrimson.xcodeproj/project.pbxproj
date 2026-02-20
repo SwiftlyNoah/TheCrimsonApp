@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		14E4C8B62F481D8F0010EF34 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 14E4C8912F48100A0010EF34 /* SwiftSoup */; };
+		14E4C8B72F481D8F0010EF34 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 14E4C8932F48100A0010EF34 /* SDWebImageSwiftUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		14E4C87E2F480F450010EF34 /* TheCrimson.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TheCrimson.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14E4C8B72F481D8F0010EF34 /* SDWebImageSwiftUI in Frameworks */,
+				14E4C8B62F481D8F0010EF34 /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

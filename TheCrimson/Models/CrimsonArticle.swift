@@ -129,6 +129,15 @@ struct CrimsonPullQuote: Identifiable, Sendable {
     }
 }
 
+// MARK: - Section
+
+struct CrimsonSection: Identifiable, Sendable {
+    let title: String
+    var articles: [CrimsonArticle]
+
+    var id: String { title }
+}
+
 // MARK: - Article
 
 struct CrimsonArticle: Identifiable, Sendable {

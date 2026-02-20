@@ -17,9 +17,8 @@ enum CrimsonViewState {
 @Observable
 class CrimsonViewModel {
     // MARK: - Data
-    var entries: [CrimsonArticleEntry] = []
+    var sections: [CrimsonSection] = []
     var articles: [CrimsonArticle] = []
-    var totalEntriesLoaded = 0
 
     // MARK: - Navigation
     var viewState: CrimsonViewState = .home
@@ -31,20 +30,15 @@ class CrimsonViewModel {
     var showFullAnimation = true
     var isFirstOpen = true
     var isLoading = false
-    var isPaginating = false
+    var loadError: String?
 
     // MARK: - Search
     var searchQuery = ""
     var searchResults: [CrimsonArticle] = []
-    private var allSearchEntries: [CrimsonArticleEntry] = []
 
     // MARK: - Scraping Cache
     private var scrapedArticles: [String: CrimsonArticle] = [:]
     private var scrapingTasks: Set<String> = []
-
-    // MARK: - Constants
-    private let pageSize = 500
-    private let searchLimit = 10000
 
     // MARK: - Computed Properties
 
@@ -63,39 +57,29 @@ class CrimsonViewModel {
     // MARK: - Initialization
 
     init() {
-        loadInitialArticles()
+        loadHomepage()
     }
 
     // MARK: - Data Loading
 
-    func loadInitialArticles() {
+    func loadHomepage() {
         isLoading = true
-        let limit = pageSize
-        Task.detached {
-            let parsed = CSVParser.parseEntries(limit: limit, offset: 0)
-            await MainActor.run {
-                self.entries = parsed
-                self.articles = parsed.map { CrimsonArticle(from: $0) }
-                self.totalEntriesLoaded = parsed.count
-                self.isLoading = false
-            }
+        loadError = nil
+        Task {
+            await fetchHomepage()
         }
     }
 
-    func loadMoreArticles() {
-        guard !isPaginating else { return }
-        isPaginating = true
-        let currentOffset = totalEntriesLoaded
-        let limit = pageSize
-
-        Task.detached {
-            let parsed = CSVParser.parseEntries(limit: limit, offset: currentOffset)
-            await MainActor.run {
-                self.entries.append(contentsOf: parsed)
-                self.articles.append(contentsOf: parsed.map { CrimsonArticle(from: $0) })
-                self.totalEntriesLoaded += parsed.count
-                self.isPaginating = false
-            }
+    func fetchHomepage() async {
+        do {
+            let fetchedSections = try await HomepageScraper.fetchSections()
+            self.sections = fetchedSections
+            self.articles = fetchedSections.flatMap(\.articles)
+            self.isLoading = false
+        } catch {
+            print("Failed to load homepage: \(error)")
+            self.loadError = "Failed to load articles. Pull down to retry."
+            self.isLoading = false
         }
     }
 
@@ -126,9 +110,6 @@ class CrimsonViewModel {
             previousViewState = viewState
             viewState = .search
         }
-        if allSearchEntries.isEmpty {
-            loadSearchEntries()
-        }
     }
 
     func showSettings() {
@@ -139,16 +120,6 @@ class CrimsonViewModel {
     }
 
     // MARK: - Article Scraping
-
-    func articleAppeared(_ index: Int) {
-        scrapeArticle(at: index)
-        prefetchNearby(index)
-
-        // Pagination: load more when near the end
-        if index > articles.count - 20 {
-            loadMoreArticles()
-        }
-    }
 
     func scrapeArticle(at index: Int) {
         guard index >= 0, index < articles.count else { return }
@@ -196,16 +167,6 @@ class CrimsonViewModel {
 
     // MARK: - Search
 
-    private func loadSearchEntries() {
-        let limit = searchLimit
-        Task.detached {
-            let all = CSVParser.parseAllEntries(limit: limit)
-            await MainActor.run {
-                self.allSearchEntries = all
-            }
-        }
-    }
-
     func performSearch() {
         let query = searchQuery.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else {
@@ -213,27 +174,16 @@ class CrimsonViewModel {
             return
         }
 
-        let source = allSearchEntries.isEmpty ? entries : allSearchEntries
-        let filtered = source.filter { $0.title.lowercased().contains(query) }
-        searchResults = filtered.prefix(50).map { CrimsonArticle(from: $0) }
+        let filtered = articles.filter { $0.title.lowercased().contains(query) }
+        searchResults = Array(filtered.prefix(50))
     }
 
     func searchResultSelected(_ article: CrimsonArticle) {
-        // Find the article in the main list, or add it
         if let idx = articles.firstIndex(where: { $0.slug == article.slug }) {
             articleSelected(idx)
         } else {
             articles.append(article)
             articleSelected(articles.count - 1)
-        }
-    }
-
-    // MARK: - Home Feed
-
-    func homeArticleAppeared(_ index: Int) {
-        // Pagination trigger
-        if index > articles.count - 20 {
-            loadMoreArticles()
         }
     }
 }

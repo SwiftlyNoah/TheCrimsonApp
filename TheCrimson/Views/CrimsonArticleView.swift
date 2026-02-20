@@ -67,7 +67,7 @@ struct CrimsonArticleView: View {
             .background(Color.pageBackground)
             .edgesIgnoringSafeArea(.bottom)
             .onAppear {
-                viewModel.articleAppeared(articleIndex)
+                viewModel.scrapeArticle(at: articleIndex)
             }
         }
     }
