@@ -11,7 +11,13 @@ import SwiftUI
 struct TheCrimsonApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            GeometryReader { geo in
+                CrimsonRootView()
+                    .environment(\.props, AppProperties(
+                        size: geo.size,
+                        safeAreaInsets: geo.safeAreaInsets
+                    ))
+            }
         }
     }
 }

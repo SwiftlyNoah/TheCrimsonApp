@@ -65,6 +65,8 @@
 			);
 			name = TheCrimson;
 			packageProductDependencies = (
+				14E4C8912F48100A0010EF34 /* SwiftSoup */,
+				14E4C8932F48100A0010EF34 /* SDWebImageSwiftUI */,
 			);
 			productName = TheCrimson;
 			productReference = 14E4C87E2F480F450010EF34 /* TheCrimson.app */;
@@ -94,6 +96,10 @@
 			);
 			mainGroup = 14E4C8752F480F450010EF34;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				14E4C8902F48100A0010EF34 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				14E4C8922F48100A0010EF34 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 14E4C87F2F480F450010EF34 /* Products */;
 			projectDirPath = "";
@@ -332,6 +338,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		14E4C8902F48100A0010EF34 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
+		14E4C8922F48100A0010EF34 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		14E4C8912F48100A0010EF34 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14E4C8902F48100A0010EF34 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+		14E4C8932F48100A0010EF34 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 14E4C8922F48100A0010EF34 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 14E4C8762F480F450010EF34 /* Project object */;
 }
